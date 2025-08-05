@@ -1,115 +1,91 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import { Settings } from "lucide-react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+export default function Invoice() {
+  const [unitPrice, setUnitPrice] = useState(0);
+  const [rows, setRows] = useState(
+    Array(8).fill({ width: "", height: "", amount: 0 })
+  );
+  const [options, setOptions] = useState({ tool: false, color: false, tax: false });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  const handleChange = (index, field, value) => {
+    const updatedRows = [...rows];
+    updatedRows[index][field] = value;
+    const w = parseFloat(updatedRows[index].width) || 0;
+    const h = parseFloat(updatedRows[index].height) || 0;
+    updatedRows[index].amount = parseFloat((w * h * unitPrice).toFixed(2));
+    setRows(updatedRows);
+  };
 
-export default function Home() {
+  const total = rows.reduce((acc, row) => acc + row.amount, 0);
+
+  const totalWithExtras = total * (1 +
+    (options.tool ? 0.25 : 0) +
+    (options.color ? 0.1 : 0) +
+    (options.tax ? 0.09 : 0));
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <main className="max-w-xl mx-auto p-4 space-y-4">
+      <div className="flex items-center gap-4">
+        <Settings className="w-6 h-6" />
+        <Input
+          type="number"
+          placeholder="قیمت واحد (متر مربع)"
+          onChange={(e) => setUnitPrice(parseFloat(e.target.value) || 0)}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/pages/index.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <Checkbox
+          checked={options.tool}
+          onCheckedChange={(val) => setOptions({ ...options, tool: val })}
+        />
+        <span>ابزار</span>
+        <Checkbox
+          checked={options.color}
+          onCheckedChange={(val) => setOptions({ ...options, color: val })}
+        />
+        <span>رنگ</span>
+        <Checkbox
+          checked={options.tax}
+          onCheckedChange={(val) => setOptions({ ...options, tax: val })}
+        />
+        <span>مالیات</span>
+      </div>
+
+      {rows.map((row, i) => (
+        <div key={i} className="grid grid-cols-4 items-center gap-2">
+          <Input
+            type="number"
+            placeholder="عرض"
+            value={row.width}
+            onChange={(e) => handleChange(i, "width", e.target.value)}
+          />
+          <Input
+            type="number"
+            placeholder="طول"
+            value={row.height}
+            onChange={(e) => handleChange(i, "height", e.target.value)}
+          />
+          <div className="col-span-1 text-center font-semibold">
+            {row.amount.toLocaleString()} تومان
+          </div>
+          <div className="text-center text-sm text-gray-500">{i + 1}</div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      ))}
+
+      <Card>
+        <CardContent className="space-y-2 p-4">
+          <div className="flex justify-between">
+            <span>قیمت کل:</span>
+            <span>{total.toLocaleString()} تومان</span>
+          </div>
+          <div className="flex justify-between">
+            <span>قیمت با ابزار و موارد اضافه:</span>
+            <span>{totalWithExtras.toLocaleString()} تومان</span>
+          </div>
+        </CardContent>
+      </Card>
+    </main>
   );
 }
