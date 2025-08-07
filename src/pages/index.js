@@ -1,16 +1,20 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+"use client"
+
+import { Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { useState } from "react";
+import { formatNumber, roundUpToNearestFive, totalPrice, addPercentage } from "@/utility/utilityFunction";
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import {Select,SelectContent,SelectGroup,SelectItem,SelectLabel,SelectTrigger,SelectValue} from "@/components/ui/select"
 
 export default function index() {
+
+  const [price, setPrice] = useState(0)
+  const [roundUp, setRoundUp] = useState(false)
+  const [packagingPercent, setPackagingPercent] = useState(12)
+  const [coloringPercent, setColoringPercent] = useState(15)
+  const [toolsPercent, setToolsPercent] = useState(25)
 
   const [rows, setRows] = useState(
     Array.from({ length: 8 }, () => ({
@@ -30,7 +34,7 @@ export default function index() {
 
       const height = parseFloat(newRows[index].height);
       const width = parseFloat(newRows[index].width);
-      const unitPrice = parseFloat(1000000);
+      const unitPrice = parseFloat(price);
 
       if (!isNaN(height) && !isNaN(width) && !isNaN(unitPrice)) {
         newRows[index].amount = height * width * unitPrice;
@@ -43,37 +47,72 @@ export default function index() {
   };
 
   return (
-    <div>
-      <Table dir="rtl">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">ردیف</TableHead>
-            <TableHead className="w-[100px]">طول</TableHead>
-            <TableHead>عرض</TableHead>
-            <TableHead className="text-right">ملبغ</TableHead>
-          </TableRow>
-        </TableHeader>
+    <div className="border border-black/50 rounded-lg" dir="rtl">
+      {/* top */}
+      <div className="p-3 border-b border-black flex gap-5 items-center">
+        {/* rows */}
+          <Select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select a fruit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Fruits</SelectLabel>
+                <SelectItem value="apple">Apple</SelectItem>
+                <SelectItem value="banana">Banana</SelectItem>
+                <SelectItem value="blueberry">Blueberry</SelectItem>
+                <SelectItem value="grapes">Grapes</SelectItem>
+                <SelectItem value="pineapple">Pineapple</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        {/* price */}
+        <div className="flex gap-3 items-center">
+          <Label htmlFor="price">قیمت</Label>
+          <Input name="price" onChange={(e) => setPrice(e.target.value)} value={price} placeholder="قیمت" className="w-[200px]" />
+        </div>
+        {/* round */}
+        <div className="flex gap-3 items-center">
+          <Label htmlFor="round">رند کردن اعداد</Label>
+          <Checkbox onCheckedChange={(checked) => { return checked ? setRoundUp(true) : setRoundUp(false) }} name="round" id="terms-2" />
+        </div>
+      </div>
+      {/* bottom */}
+      <Table >
         <TableBody>
-          {rows.map((row,index) => (
+          {rows.map((row, index) => (
             <TableRow key={index}>
-              <TableCell className="font-medium">{index+1}</TableCell>
+              <TableCell className="w-[50px] border-l pr-5">{index + 1}</TableCell>
 
-              <TableCell className="w-[100px]">
-                <Input placeholder="طول" onChange={(e) => handleInputChange(index, 'height', e.target.value)} value={row.height} type="number" />
+              <TableCell className="w-[100px] pr-3">
+                <Input placeholder="طول" onChange={(e) => handleInputChange(index, 'height', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'height', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'height', e.target.value)} value={row.height} />
               </TableCell>
-              <TableCell className="w-[100px]">
-                <Input placeholder="عرض" onChange={(e) => handleInputChange(index, 'width', e.target.value)} value={row.width} type="number" />
+              <TableCell className="w-[100px] border-l pl-3">
+                <Input placeholder="عرض" onChange={(e) => handleInputChange(index, 'width', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'width', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'width', e.target.value)} value={row.width} />
               </TableCell>
-              <TableCell className="text-right ">
-                <Input readOnly placeholder="مبلغ" value={row.amount} type="number" />
+              <TableCell className="text-right">
+                <Input readOnly placeholder="مبلغ" value={formatNumber(row.amount) + '  تومان'} />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={3}>مبلغ کل</TableCell>
-            <TableCell className="text-right">گوز</TableCell>
+            <TableCell colSpan={3}>مبلغ بدون احتساب</TableCell>
+            <TableCell className="text-right">
+              {formatNumber(totalPrice(rows))}
+              <span className="mr-2">تومان</span>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell colSpan={3}>
+              مبلغ با احتساب ابزار
+              <span className="mr-2">({toolsPercent}%)</span>
+            </TableCell>
+            <TableCell className="text-right">
+              {formatNumber(addPercentage(totalPrice(rows), toolsPercent))}
+              <span className="mr-2">تومان</span>
+            </TableCell>
           </TableRow>
         </TableFooter>
       </Table>
