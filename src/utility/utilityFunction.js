@@ -8,8 +8,16 @@ function totalPrice(rows) {
     const totalAmount = rows.reduce((sum, row) => sum + Number(row.amount), 0);
     return totalAmount
 }
-function addPercentage (amount, percent) { 
-    return amount * (1 + percent / 100); 
+function addPercentage(amount, percent) {
+    return formatNumber(amount * (1 + percent / 100))
+}
+function totalAmountExcludingTax(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, amount) {
+    const totalPercent =
+        (packaging ? packagingPercent : 0) +
+        (coloring ? coloringPercent : 0) +
+        (tools ? toolsPercent : 0);
+
+    return amount * (1 + totalPercent / 100)
 }
 
-export { formatNumber, roundUpToNearestFive, totalPrice, addPercentage }
+export { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, totalAmountExcludingTax }
