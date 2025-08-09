@@ -11,13 +11,13 @@ function totalPrice(rows) {
 function addPercentage(amount, percent) {
     return formatNumber(amount * (1 + percent / 100))
 }
-function totalAmountExcludingTax(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, amount) {
+function calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, rent ,amount) {
     const totalPercent =
         (packaging ? packagingPercent : 0) +
         (coloring ? coloringPercent : 0) +
         (tools ? toolsPercent : 0);
 
-    return amount * (1 + totalPercent / 100)
+    return (amount * (1 + totalPercent / 100)) + rent
 }
 
-export { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, totalAmountExcludingTax }
+export { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, calcTotalAmount }

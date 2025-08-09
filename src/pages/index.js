@@ -3,20 +3,20 @@
 import { Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { useState } from "react";
-import { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, totalAmountExcludingTax } from "@/utility/utilityFunction";
+import { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, calcTotalAmount } from "@/utility/utilityFunction";
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function index() {
 
-  const [rowCount, setRowCount] = useState(21)
+  const [rowCount, setRowCount] = useState(20)
 
   const [price, setPrice] = useState(0)
 
   const [roundUp, setRoundUp] = useState(false)
 
-  const [tax, setTax] = useState(3)
+  const [rent, setRent] = useState(0)
 
   const [packagingPercent, setPackagingPercent] = useState(12)
   const [coloringPercent, setColoringPercent] = useState(15)
@@ -48,7 +48,7 @@ export default function index() {
       const unitPrice = parseFloat(price);
 
       if (!isNaN(height) && !isNaN(width) && !isNaN(unitPrice)) {
-        newRows[index].amount = height * width * unitPrice;
+        newRows[index].amount = (height * width * unitPrice) / 10000;
       } else {
         newRows[index].amount = 0;
       }
@@ -59,7 +59,7 @@ export default function index() {
   const handleRowCountChange = (newCount) => {
     setRows(prevRows => {
       const currentLength = prevRows.length;
-  
+
       if (newCount > currentLength) {
         const extraRows = Array.from({ length: newCount - currentLength }, () => ({
           height: '',
@@ -72,44 +72,63 @@ export default function index() {
       }
     });
   };
-  
+
   return (
     <div className="border border-black/50 rounded-lg" dir="rtl">
       {/* top */}
-      <div className="p-3 border-b border-black flex gap-7 items-center">
-        {/* rows */}
-        <div className="flex gap-3 items-center">
-          <Label htmlFor="rowCount">تعداد ردیف ها</Label>
-          <Select name="rowCount" dir="rtl" onValueChange={(value) => {
-            setRowCount(value)
-            handleRowCountChange(value)
-          }} value={`${rowCount}`}>
-            <SelectTrigger className="w-[70px]" >
-              <SelectValue placeholder={rowCount} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup className="font-dana">
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+      <div className="p-3 border-b border-black flex flex-col gap-8">
+        <div className="flex gap-7">
+          {/* rows */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="rowCount">تعداد ردیف ها</Label>
+            <Select name="rowCount" dir="rtl" onValueChange={(value) => {
+              setRowCount(value)
+              handleRowCountChange(value)
+            }} value={`${rowCount}`}>
+              <SelectTrigger className="w-[70px]" >
+                <SelectValue placeholder={rowCount} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup className="font-dana">
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="30">30</SelectItem>
+                  <SelectItem value="40">40</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          {/* price */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="price">قیمت</Label>
+            <Input name="price" onChange={(e) => setPrice(Number(e.target.value.replace(/,/g, '')))} value={formatNumber(price)} placeholder="قیمت" className="w-[200px]" />
+          </div>
+          {/* tools */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="round">محاسبه ابزار</Label>
+            <Checkbox checked={tools} onCheckedChange={(checked) => setTools(checked)} name="tools" />
+          </div>
+          {/* packing */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="round">محاسبه بسته بندی</Label>
+            <Checkbox checked={packaging} onCheckedChange={(checked) => setPackaging(checked)} name="packing" />
+          </div>
+          {/* color */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="round">محاسبه رنگ</Label>
+            <Checkbox checked={coloring} onCheckedChange={(checked) => setColoring(checked)} name="color" />
+          </div>
         </div>
-        {/* price */}
-        <div className="flex gap-3 items-center">
-          <Label htmlFor="price">قیمت</Label>
-          <Input name="price" onChange={(e) => setPrice(Number(e.target.value.replace(/,/g, '')))} value={formatNumber(price)} placeholder="قیمت" className="w-[200px]" />
-        </div>
-        {/* round */}
-        <div className="flex gap-3 items-center">
-          <Label htmlFor="round">رند کردن اعداد</Label>
-          <Checkbox onCheckedChange={(checked) => { return checked ? setRoundUp(true) : setRoundUp(false) }} name="round" id="terms-2" />
+        <div className="flex gap-7">
+          {/* round */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="round">رند کردن اعداد</Label>
+            <Checkbox onCheckedChange={(checked) => { return checked ? setRoundUp(true) : setRoundUp(false) }} name="round" id="terms-2" />
+          </div>
         </div>
       </div>
-      {/* bottom */}
+      {/* center and bottom */}
       <Table>
         <TableBody>
           {rows.map((row, index) => (
@@ -138,7 +157,7 @@ export default function index() {
             </TableCell>
           </TableRow>
           {/* Amount including tools */}
-          <TableRow>
+          <TableRow className={`${tools ? 'span' : 'hidden'}`}>
             <TableCell colSpan={3}>
               مبلغ با احتساب ابزار
               <span className="mr-2">(%{toolsPercent})</span>
@@ -148,19 +167,8 @@ export default function index() {
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
-          {/* Amount including packing */}
-          <TableRow>
-            <TableCell colSpan={3}>
-              مبلغ با احتساب بسته بندی
-              <span className="mr-2">(%{packagingPercent})</span>
-            </TableCell>
-            <TableCell className="text-right">
-              {addPercentage(totalPrice(rows), packagingPercent)}
-              <span className="mr-2">تومان</span>
-            </TableCell>
-          </TableRow>
           {/* Amount including coloring */}
-          <TableRow>
+          <TableRow className={`${coloring ? 'span' : 'hidden'}`}>
             <TableCell colSpan={3}>
               مبلغ با احتساب  رنگ
               <span className="mr-2">(%{coloringPercent})</span>
@@ -170,24 +178,33 @@ export default function index() {
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
-          {/* total Amount Excluding Tax */}
-          <TableRow>
+          {/* Amount including packing */}
+          <TableRow className={`${packaging ? 'span' : 'hidden'}`}>
             <TableCell colSpan={3}>
-              مبلغ کل بدون احتساب مالیات
+              مبلغ با احتساب بسته بندی
+              <span className="mr-2">(%{packagingPercent})</span>
             </TableCell>
             <TableCell className="text-right">
-              {formatNumber(totalAmountExcludingTax(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, totalPrice(rows)))}
+              {addPercentage(totalPrice(rows), packagingPercent)}
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
-          {/* total Amount include Tax */}
+          {/* Rent Amount */}
           <TableRow>
             <TableCell colSpan={3}>
-              مبلغ کل با احتساب مالیات
-              <span className="mr-2">(%{tax})</span>
+              مبلغ کرایه
             </TableCell>
             <TableCell className="text-right">
-              {addPercentage(totalAmountExcludingTax(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, totalPrice(rows)), tax)}
+              <Input name="rent" onChange={(e) => setRent(Number(e.target.value.replace(/,/g, '')))} value={formatNumber(rent)} placeholder="کرایه" className="w-[200px]" />
+            </TableCell>
+          </TableRow>
+          {/* total Amount */}
+          <TableRow>
+            <TableCell colSpan={3}>
+              مبلغ کل
+            </TableCell>
+            <TableCell className="text-right">
+              {formatNumber(calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, rent, totalPrice(rows)))}
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
