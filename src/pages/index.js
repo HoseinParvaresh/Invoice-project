@@ -18,7 +18,7 @@ export default function index() {
 
   const [rent, setRent] = useState(0)
 
-  const [packagingPercent, setPackagingPercent] = useState(12)
+  const [packagingPercent, setPackagingPercent] = useState(3)
   const [coloringPercent, setColoringPercent] = useState(15)
   const [toolsPercent, setToolsPercent] = useState(25)
 
@@ -77,6 +77,7 @@ export default function index() {
     <div className="border border-black/50 rounded-lg" dir="rtl">
       {/* top */}
       <div className="p-3 border-b border-black flex flex-col gap-8">
+        {/* top */}
         <div className="flex gap-7">
           {/* rows */}
           <div className="flex gap-3 items-center">
@@ -120,11 +121,27 @@ export default function index() {
             <Checkbox checked={coloring} onCheckedChange={(checked) => setColoring(checked)} name="color" />
           </div>
         </div>
+        {/* bottom */}
         <div className="flex gap-7">
           {/* round */}
           <div className="flex gap-3 items-center">
             <Label htmlFor="round">رند کردن اعداد</Label>
             <Checkbox onCheckedChange={(checked) => { return checked ? setRoundUp(true) : setRoundUp(false) }} name="round" id="terms-2" />
+          </div>
+          {/* tools percent */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="toolsPercent">درصد ابزار</Label>
+            <Input name="toolsPercent" onChange={(e) => setToolsPercent(e.target.value)} value={toolsPercent} placeholder="" className="w-[70px]" />
+          </div>
+          {/* packing percent */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="packingPercent">درصد بسته بندی</Label>
+            <Input name="packingPercent" onChange={(e) => setPackagingPercent(e.target.value)} value={packagingPercent} placeholder="" className="w-[70px]" />
+          </div>
+          {/* coloring percent */}
+          <div className="flex gap-3 items-center">
+            <Label htmlFor="colorPercent">درصد رنگ</Label>
+            <Input name="colorPercent" onChange={(e) => setColoringPercent(e.target.value)} value={coloringPercent} placeholder="" className="w-[70px]" />
           </div>
         </div>
       </div>
