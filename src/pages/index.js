@@ -7,6 +7,7 @@ import { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, calcTota
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ModeToggle } from "@/utility/ModeToggle";
 
 export default function index() {
 
@@ -74,9 +75,9 @@ export default function index() {
   };
 
   return (
-    <div className="border border-black/50 rounded-lg" dir="rtl">
+    <div className="border border-black/50 dark:border-white/40 rounded-lg" dir="rtl">
       {/* top */}
-      <div className="p-3 border-b border-black flex flex-col gap-8">
+      <div className="p-3 border-b border-black dark:border-white/40 flex flex-col gap-8">
         {/* top */}
         <div className="flex gap-7">
           {/* rows */}
@@ -124,25 +125,26 @@ export default function index() {
         {/* bottom */}
         <div className="flex gap-7">
           {/* round */}
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-2 items-center">
             <Label htmlFor="round">رند کردن اعداد</Label>
             <Checkbox onCheckedChange={(checked) => { return checked ? setRoundUp(true) : setRoundUp(false) }} name="round" id="terms-2" />
           </div>
           {/* tools percent */}
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-2 items-center">
             <Label htmlFor="toolsPercent">درصد ابزار</Label>
-            <Input name="toolsPercent" onChange={(e) => setToolsPercent(e.target.value)} value={toolsPercent} placeholder="" className="w-[70px]" />
+            <Input name="toolsPercent" onChange={(e) => setToolsPercent(Number(e.target.value))} value={toolsPercent} placeholder="" className="w-[50px]" />
           </div>
           {/* packing percent */}
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-2 items-center">
             <Label htmlFor="packingPercent">درصد بسته بندی</Label>
-            <Input name="packingPercent" onChange={(e) => setPackagingPercent(e.target.value)} value={packagingPercent} placeholder="" className="w-[70px]" />
+            <Input name="packingPercent" onChange={(e) => setPackagingPercent(Number(e.target.value))} value={packagingPercent} placeholder="" className="w-[50px]" />
           </div>
           {/* coloring percent */}
           <div className="flex gap-3 items-center">
             <Label htmlFor="colorPercent">درصد رنگ</Label>
-            <Input name="colorPercent" onChange={(e) => setColoringPercent(e.target.value)} value={coloringPercent} placeholder="" className="w-[70px]" />
+            <Input name="colorPercent" onChange={(e) => setColoringPercent(Number(e.target.value))} value={coloringPercent} placeholder="" className="w-[50px]" />
           </div>
+          <ModeToggle/>
         </div>
       </div>
       {/* center and bottom */}

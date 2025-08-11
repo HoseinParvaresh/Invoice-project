@@ -17,6 +17,9 @@ function calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringP
         (coloring ? coloringPercent : 0) +
         (tools ? toolsPercent : 0);
 
+        console.log(totalPercent);
+        
+
     return (amount * (1 + totalPercent / 100)) + rent
 }
 
