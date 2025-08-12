@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ModeToggle } from "@/utility/ModeToggle";
 import { calculatePercent } from "@/utility/utilityFunction";
+import { Button } from "@/components/ui/button";
 
 export default function index() {
 
@@ -27,6 +28,8 @@ export default function index() {
   const [packaging, setPackaging] = useState(true)
   const [coloring, setColoring] = useState(true)
   const [tools, setTools] = useState(true)
+
+  const [fontSize, setFontsize] = useState("!text-lg")
 
 
   const [rows, setRows] = useState(
@@ -78,75 +81,85 @@ export default function index() {
   return (
     <div className="border border-black/50 dark:border-white/40 rounded-lg" dir="rtl">
       {/* top */}
-      <div className="p-3 border-b border-black dark:border-white/40 flex flex-col gap-8">
-        {/* top */}
-        <div className="flex gap-7">
-          {/* rows */}
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="rowCount">تعداد ردیف ها</Label>
-            <Select name="rowCount" dir="rtl" onValueChange={(value) => {
-              setRowCount(value)
-              handleRowCountChange(value)
-            }} value={`${rowCount}`}>
-              <SelectTrigger className="w-[70px]" >
-                <SelectValue placeholder={rowCount} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup className="font-dana">
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="40">40</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+      <div className="p-3 border-b border-black dark:border-white/40 flex justify-between items-center">
+        {/* right */}
+        <div className="flex flex-col gap-8">
+          {/* top */}
+          <div className="flex gap-7">
+            {/* rows */}
+            <div className="flex gap-3 items-center">
+              <Label htmlFor="rowCount">تعداد ردیف ها</Label>
+              <Select name="rowCount" dir="rtl" onValueChange={(value) => {
+                setRowCount(value)
+                handleRowCountChange(value)
+              }} value={`${rowCount}`}>
+                <SelectTrigger className="w-[70px]" >
+                  <SelectValue placeholder={rowCount} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup className="font-dana">
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="30">30</SelectItem>
+                    <SelectItem value="40">40</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            {/* price */}
+            <div className="flex gap-3 items-center">
+              <Label htmlFor="price">قیمت</Label>
+              <Input name="price" onChange={(e) => setPrice(Number(e.target.value.replace(/,/g, '')))} value={formatNumber(price)} placeholder="قیمت" className={`w-[200px] ${fontSize}`} />
+            </div>
           </div>
-          {/* price */}
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="price">قیمت</Label>
-            <Input name="price" onChange={(e) => setPrice(Number(e.target.value.replace(/,/g, '')))} value={formatNumber(price)} placeholder="قیمت" className="w-[200px]" />
+          {/* center */}
+          <div className="flex gap-7">
+            {/* tools percent */}
+            <div className="flex gap-2 items-center">
+              <Label htmlFor="toolsPercent">درصد ابزار</Label>
+              <Input name="toolsPercent" onChange={(e) => setToolsPercent(Number(e.target.value))} value={toolsPercent} placeholder="" className={`w-[50px] ${fontSize}`} />
+            </div>
+            {/* packing percent */}
+            <div className="flex gap-2 items-center">
+              <Label htmlFor="packingPercent">درصد بسته بندی</Label>
+              <Input name="packingPercent" onChange={(e) => setPackagingPercent(Number(e.target.value))} value={packagingPercent} placeholder="" className={`w-[50px] ${fontSize}`} />
+            </div>
+            {/* coloring percent */}
+            <div className="flex gap-3 items-center">
+              <Label htmlFor="colorPercent">درصد رنگ</Label>
+              <Input name="colorPercent" onChange={(e) => setColoringPercent(Number(e.target.value))} value={coloringPercent} placeholder="" className={`w-[50px] ${fontSize}`} />
+            </div>
+            {/* dark mode button */}
+            <ModeToggle />
           </div>
-          {/* tools */}
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="round">محاسبه ابزار</Label>
-            <Checkbox checked={tools} onCheckedChange={(checked) => setTools(checked)} name="tools" />
-          </div>
-          {/* packing */}
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="round">محاسبه بسته بندی</Label>
-            <Checkbox checked={packaging} onCheckedChange={(checked) => setPackaging(checked)} name="packing" />
-          </div>
-          {/* color */}
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="round">محاسبه رنگ</Label>
-            <Checkbox checked={coloring} onCheckedChange={(checked) => setColoring(checked)} name="color" />
+          {/* bottom */}
+          <div className="flex gap-7 mb-2">
+            {/* round */}
+            <div className="flex gap-2 items-center">
+              <Label htmlFor="round">رند کردن اعداد</Label>
+              <Checkbox onCheckedChange={(checked) => { return checked ? setRoundUp(true) : setRoundUp(false) }} name="round" id="terms-2" />
+            </div>
+            {/* tools */}
+            <div className="flex gap-3 items-center">
+              <Label htmlFor="round">محاسبه ابزار</Label>
+              <Checkbox checked={tools} onCheckedChange={(checked) => setTools(checked)} name="tools" />
+            </div>
+            {/* packing */}
+            <div className="flex gap-3 items-center">
+              <Label htmlFor="round">محاسبه بسته بندی</Label>
+              <Checkbox checked={packaging} onCheckedChange={(checked) => setPackaging(checked)} name="packing" />
+            </div>
+            {/* color */}
+            <div className="flex gap-3 items-center">
+              <Label htmlFor="round">محاسبه رنگ</Label>
+              <Checkbox checked={coloring} onCheckedChange={(checked) => setColoring(checked)} name="color" />
+            </div>
           </div>
         </div>
-        {/* bottom */}
-        <div className="flex gap-7">
-          {/* round */}
-          <div className="flex gap-2 items-center">
-            <Label htmlFor="round">رند کردن اعداد</Label>
-            <Checkbox onCheckedChange={(checked) => { return checked ? setRoundUp(true) : setRoundUp(false) }} name="round" id="terms-2" />
-          </div>
-          {/* tools percent */}
-          <div className="flex gap-2 items-center">
-            <Label htmlFor="toolsPercent">درصد ابزار</Label>
-            <Input name="toolsPercent" onChange={(e) => setToolsPercent(Number(e.target.value))} value={toolsPercent} placeholder="" className="w-[50px]" />
-          </div>
-          {/* packing percent */}
-          <div className="flex gap-2 items-center">
-            <Label htmlFor="packingPercent">درصد بسته بندی</Label>
-            <Input name="packingPercent" onChange={(e) => setPackagingPercent(Number(e.target.value))} value={packagingPercent} placeholder="" className="w-[50px]" />
-          </div>
-          {/* coloring percent */}
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="colorPercent">درصد رنگ</Label>
-            <Input name="colorPercent" onChange={(e) => setColoringPercent(Number(e.target.value))} value={coloringPercent} placeholder="" className="w-[50px]" />
-          </div>
-          {/* dark mode button */}
-          <ModeToggle/>
+        {/* left */}
+        <div>
+          <Button></Button>
         </div>
       </div>
       {/* center and bottom */}
@@ -154,16 +167,16 @@ export default function index() {
         <TableBody>
           {rows.map((row, index) => (
             <TableRow key={index}>
-              <TableCell className="w-[50px] border-l pr-5">{index + 1}</TableCell>
+              <TableCell className={`w-[50px] border-l pr-5 ${fontSize}`}>{index + 1}</TableCell>
 
               <TableCell className="w-[100px] pr-3">
-                <Input placeholder="طول" onChange={(e) => handleInputChange(index, 'height', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'height', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'height', (e.target.value))} value={row.height} />
+                <Input className={`${fontSize} placeholder:text-sm`} placeholder="طول" onChange={(e) => handleInputChange(index, 'height', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'height', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'height', (e.target.value))} value={row.height} />
               </TableCell>
               <TableCell className="w-[100px] border-l pl-3">
-                <Input placeholder="عرض" onChange={(e) => handleInputChange(index, 'width', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'width', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'width', (e.target.value))} value={row.width} />
+                <Input className={`${fontSize} placeholder:text-sm`} placeholder="عرض" onChange={(e) => handleInputChange(index, 'width', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'width', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'width', (e.target.value))} value={row.width} />
               </TableCell>
               <TableCell className="text-right">
-                <Input readOnly tabIndex={-1} placeholder="مبلغ" value={formatNumber(row.amount) + '  تومان'} />
+                <Input className={`${fontSize} placeholder:text-sm`} readOnly tabIndex={-1} placeholder="مبلغ" value={formatNumber(row.amount) + '  تومان'} />
               </TableCell>
             </TableRow>
           ))}
@@ -171,55 +184,79 @@ export default function index() {
         <TableFooter>
           {/* Amount excluding */}
           <TableRow>
-            <TableCell colSpan={3}>مبلغ بدون احتساب</TableCell>
-            <TableCell className="text-right">
+            <TableCell className={`${fontSize}`} colSpan={3}>مبلغ بدون احتساب</TableCell>
+            <TableCell className={`text-right ${fontSize}`}>
               {formatNumber(totalPrice(rows))}
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
           {/* Amount including tools */}
           <TableRow className={`${tools ? 'span' : 'hidden'}`}>
-            <TableCell colSpan={3}>
+            <TableCell className={`${fontSize}`} colSpan={3}>
               نرخ ابزار
               <span className="mr-2">(%{toolsPercent})</span>
             </TableCell>
-            <TableCell className="text-right">
-              {/* {addPercentage(totalPrice(rows), toolsPercent)} */}
-              {calculatePercent(totalPrice(rows),toolsPercent)}
-              <span className="mr-2">تومان</span>
+            <TableCell className={`text-right flex gap-20 ${fontSize}`}>
+              <div>
+                {calculatePercent(totalPrice(rows), toolsPercent)}
+                <span className="mr-2">تومان</span>
+              </div>
+              <div className="flex">
+                <p className="w-[230px]">مبلغ با احتساب ابزار</p>
+                <div>
+                  {addPercentage(totalPrice(rows), toolsPercent)}
+                  <span className="mr-2">تومان</span>
+                </div>
+              </div>
             </TableCell>
           </TableRow>
           {/* Amount including coloring */}
           <TableRow className={`${coloring ? 'span' : 'hidden'}`}>
-            <TableCell colSpan={3}>
+            <TableCell className={`${fontSize}`} colSpan={3}>
               نرخ رنگ
               <span className="mr-2">(%{coloringPercent})</span>
             </TableCell>
-            <TableCell className="text-right">
-              {/* {addPercentage(totalPrice(rows), coloringPercent)} */}
-              {calculatePercent(totalPrice(rows),coloringPercent)}
-              <span className="mr-2">تومان</span>
+            <TableCell className={`text-right flex gap-20 ${fontSize}`}>
+              <div>
+                {calculatePercent(totalPrice(rows), coloringPercent)}
+                <span className="mr-2">تومان</span>
+              </div>
+              <div className="flex">
+                <p className="w-[230px]">مبلغ با احتساب رنگ</p>
+                <div>
+                  {addPercentage(totalPrice(rows), coloringPercent)}
+                  <span className="mr-2">تومان</span>
+                </div>
+              </div>
             </TableCell>
           </TableRow>
           {/* Amount including packing */}
           <TableRow className={`${packaging ? 'span' : 'hidden'}`}>
-            <TableCell colSpan={3}>
+            <TableCell className={`${fontSize}`} colSpan={3}>
               نرخ بسته بندی
               <span className="mr-2">(%{packagingPercent})</span>
             </TableCell>
-            <TableCell className="text-right">
-              {/* {addPercentage(totalPrice(rows), packagingPercent)} */}
-              {calculatePercent(totalPrice(rows),packagingPercent)}
-              <span className="mr-2">تومان</span>
+            <TableCell className={`text-right flex gap-20 ${fontSize}`}>
+              <div>
+                {calculatePercent(totalPrice(rows), packagingPercent)}
+                <span className="mr-2">تومان</span>
+              </div>
+              <div className="flex">
+                <p className="w-[230px]">مبلغ با احتساب بسته بندی</p>
+                <div>
+                  {addPercentage(totalPrice(rows), packagingPercent)}
+                  <span className="mr-2">تومان</span>
+                </div>
+              </div>
             </TableCell>
           </TableRow>
           {/* Rent Amount */}
           <TableRow>
-            <TableCell colSpan={3}>
+            <TableCell className={`${fontSize}`} colSpan={3}>
               مبلغ کرایه
             </TableCell>
             <TableCell className="text-right">
-              <Input name="rent" onChange={(e) => setRent(Number(e.target.value.replace(/,/g, '')))} value={formatNumber(rent)} placeholder="کرایه" className="w-[200px]" />
+              <Input name="rent" onChange={(e) => setRent(Number(e.target.value.replace(/,/g, '')))} value={formatNumber(rent)} placeholder="کرایه" className={`w-[200px] ${fontSize}`} />
             </TableCell>
           </TableRow>
           {/* total Amount */}
