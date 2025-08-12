@@ -1,15 +1,25 @@
 "use client"
 
+import * as React from "react"
 import { Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { useState } from "react";
 import { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, calcTotalAmount } from "@/utility/utilityFunction";
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectLabel } from "@/components/ui/select"
 import { ModeToggle } from "@/utility/ModeToggle";
 import { calculatePercent } from "@/utility/utilityFunction";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 
 export default function index() {
 
@@ -29,7 +39,14 @@ export default function index() {
   const [coloring, setColoring] = useState(true)
   const [tools, setTools] = useState(true)
 
-  const [fontSize, setFontsize] = useState("!text-lg")
+  const [fontSize, setFontsize] = useState("!text-sm")
+
+  const [description, setDescription] = useState("")
+
+  const [toggleMode, setToggleMode] = React.useState("light")
+
+  const { setTheme } = useTheme()
+  setTheme(toggleMode)
 
 
   const [rows, setRows] = useState(
@@ -81,7 +98,7 @@ export default function index() {
   return (
     <div className="border border-black/50 dark:border-white/40 rounded-lg" dir="rtl">
       {/* top */}
-      <div className="p-3 border-b border-black dark:border-white/40 flex justify-between items-center">
+      <div className="p-3 border-b border-black dark:border-white/40 flex justify-between items-start">
         {/* right */}
         <div className="flex flex-col gap-8">
           {/* top */}
@@ -130,8 +147,6 @@ export default function index() {
               <Label htmlFor="colorPercent">درصد رنگ</Label>
               <Input name="colorPercent" onChange={(e) => setColoringPercent(Number(e.target.value))} value={coloringPercent} placeholder="" className={`w-[50px] ${fontSize}`} />
             </div>
-            {/* dark mode button */}
-            <ModeToggle />
           </div>
           {/* bottom */}
           <div className="flex gap-7 mb-2">
@@ -158,8 +173,49 @@ export default function index() {
           </div>
         </div>
         {/* left */}
-        <div>
-          <Button></Button>
+        <div className="flex flex-col gap-5">
+          <Dialog dir="rtl">
+            <form>
+              <DialogTrigger asChild>
+                <Button variant="outline">تنظیمات</Button>
+              </DialogTrigger>
+              <DialogContent dir="rtl" className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle className="text-left font-dana">تنظیمات</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4">
+                  <div className="flex gap-3">
+                    <Label htmlFor="theme" className="font-dana">عوض کردن تم</Label>
+                    <Button name="theme" variant="outline" size="icon" onClick={() => toggleMode === 'light' ? setToggleMode("dark") : setToggleMode("light")}>
+                      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                      <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                      <span className="sr-only">Toggle theme</span>
+                    </Button>
+                  </div>
+                  <div className="flex gap-3">
+                    <Label htmlFor="font" className="font-dana">تغییر فونت</Label>
+                    <Select dir="rtl" name="font" onValueChange={(value) => {
+                      setFontsize(value)
+                    }} value={`${fontSize}`}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder={fontSize} className="font-dana text-2xl" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="!text-sm">14</SelectItem>
+                          <SelectItem value="!text-base">16</SelectItem>
+                          <SelectItem value="!text-lg">18</SelectItem>
+                          <SelectItem value="!text-xl">20</SelectItem>
+                          <SelectItem value="!text-2xl">24</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </DialogContent>
+            </form>
+          </Dialog>
+          <Button className="h-12 text-base">ثبت</Button>
         </div>
       </div>
       {/* center and bottom */}
@@ -261,10 +317,10 @@ export default function index() {
           </TableRow>
           {/* total Amount */}
           <TableRow>
-            <TableCell colSpan={3}>
+            <TableCell className={`${fontSize}`} colSpan={3}>
               مبلغ کل
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell className={`text-right ${fontSize}`}>
               {formatNumber(calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, rent, totalPrice(rows)))}
               <span className="mr-2">تومان</span>
             </TableCell>
