@@ -8,16 +8,9 @@ import { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, calcTota
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectLabel } from "@/components/ui/select"
-import { ModeToggle } from "@/utility/ModeToggle";
-import { calculatePercent } from "@/utility/utilityFunction";
+import { calculatePercent, calcPackingPercent } from "@/utility/utilityFunction";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
@@ -39,7 +32,7 @@ export default function index() {
   const [coloring, setColoring] = useState(true)
   const [tools, setTools] = useState(true)
 
-  const [fontSize, setFontsize] = useState("!text-sm")
+  const [fontSize, setFontsize] = useState("!text-base")
 
   const [description, setDescription] = useState("")
 
@@ -135,17 +128,17 @@ export default function index() {
             {/* tools percent */}
             <div className="flex gap-2 items-center">
               <Label htmlFor="toolsPercent">درصد ابزار</Label>
-              <Input name="toolsPercent" onChange={(e) => setToolsPercent(Number(e.target.value))} value={toolsPercent} placeholder="" className={`w-[50px] ${fontSize}`} />
+              <Input name="toolsPercent" onChange={(e) => setToolsPercent(Number(e.target.value))} value={toolsPercent} placeholder="" className={`${fontSize === '!text-2xl' ? 'w-[60px]' : 'w-[50px]'} ${fontSize}`} />
             </div>
             {/* packing percent */}
             <div className="flex gap-2 items-center">
               <Label htmlFor="packingPercent">درصد بسته بندی</Label>
-              <Input name="packingPercent" onChange={(e) => setPackagingPercent(Number(e.target.value))} value={packagingPercent} placeholder="" className={`w-[50px] ${fontSize}`} />
+              <Input name="packingPercent" onChange={(e) => setPackagingPercent(Number(e.target.value))} value={packagingPercent} placeholder="" className={`${fontSize === '!text-2xl' ? 'w-[60px]' : 'w-[50px]'} ${fontSize}`} />
             </div>
             {/* coloring percent */}
             <div className="flex gap-3 items-center">
               <Label htmlFor="colorPercent">درصد رنگ</Label>
-              <Input name="colorPercent" onChange={(e) => setColoringPercent(Number(e.target.value))} value={coloringPercent} placeholder="" className={`w-[50px] ${fontSize}`} />
+              <Input name="colorPercent" onChange={(e) => setColoringPercent(Number(e.target.value))} value={coloringPercent} placeholder="" className={`${fontSize === '!text-2xl' ? 'w-[60px]' : 'w-[50px]'} ${fontSize}`} />
             </div>
           </div>
           {/* bottom */}
@@ -202,7 +195,6 @@ export default function index() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectItem value="!text-sm">14</SelectItem>
                           <SelectItem value="!text-base">16</SelectItem>
                           <SelectItem value="!text-lg">18</SelectItem>
                           <SelectItem value="!text-xl">20</SelectItem>
@@ -258,7 +250,7 @@ export default function index() {
                 <span className="mr-2">تومان</span>
               </div>
               <div className="flex">
-                <p className="w-[230px]">مبلغ با احتساب ابزار</p>
+                <p className={`${fontSize === '!text-2xl' ? 'w-[300px]' : 'w-[230px]'}`}>مبلغ با احتساب ابزار</p>
                 <div>
                   {addPercentage(totalPrice(rows), toolsPercent)}
                   <span className="mr-2">تومان</span>
@@ -278,12 +270,23 @@ export default function index() {
                 <span className="mr-2">تومان</span>
               </div>
               <div className="flex">
-                <p className="w-[230px]">مبلغ با احتساب رنگ</p>
+                <p className={`${fontSize === '!text-2xl' ? 'w-[300px]' : 'w-[230px]'}`}>مبلغ با احتساب رنگ</p>
                 <div>
                   {addPercentage(totalPrice(rows), coloringPercent)}
                   <span className="mr-2">تومان</span>
                 </div>
               </div>
+            </TableCell>
+          </TableRow>
+          {/* Amount including coloring */}
+          <TableRow className={`${coloring && tools ? 'span' : 'hidden'}`}>
+            <TableCell className={`${fontSize}`} colSpan={3}>
+              مبلغ با احتساب رنگ و ابزار
+              <span className="mr-2">(%{coloringPercent + toolsPercent})</span>
+            </TableCell>
+            <TableCell className={`text-right ${fontSize}`}>
+              {addPercentage(totalPrice(rows), coloringPercent + toolsPercent)}
+              <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
           {/* Amount including packing */}
@@ -294,13 +297,13 @@ export default function index() {
             </TableCell>
             <TableCell className={`text-right flex gap-20 ${fontSize}`}>
               <div>
-                {calculatePercent(totalPrice(rows), packagingPercent)}
+                {calculatePercent(calcPackingPercent(totalPrice(rows), coloringPercent + toolsPercent), packagingPercent)}
                 <span className="mr-2">تومان</span>
               </div>
               <div className="flex">
-                <p className="w-[230px]">مبلغ با احتساب بسته بندی</p>
+                <p className={`${fontSize === '!text-2xl' ? 'w-[300px]' : 'w-[230px]'}`}>مبلغ با احتساب بسته بندی</p>
                 <div>
-                  {addPercentage(totalPrice(rows), packagingPercent)}
+                  {formatNumber(calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, rent, totalPrice(rows)) - rent)}
                   <span className="mr-2">تومان</span>
                 </div>
               </div>

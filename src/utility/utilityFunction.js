@@ -13,14 +13,18 @@ function addPercentage(amount, percent) {
 }
 function calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, rent, amount) {
     const totalPercent =
-        (packaging ? packagingPercent : 0) +
         (coloring ? coloringPercent : 0) +
         (tools ? toolsPercent : 0);
 
-    return (amount * (1 + totalPercent / 100)) + rent
+    const priceWithoutPacking = amount * (1 + totalPercent / 100)
+
+    return (priceWithoutPacking * (1 + (packaging ? packagingPercent : 0) / 100)) + rent
 }
 function calculatePercent(amount, percent) {
     return formatNumber(amount * (percent / 100))
 }
+function calcPackingPercent(amount, percent) {
+    return amount * (1 + percent / 100)
+}
 
-export { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, calcTotalAmount, calculatePercent }
+export { formatNumber, roundUpToNearestFive, totalPrice, addPercentage, calcTotalAmount, calculatePercent, calcPackingPercent }
