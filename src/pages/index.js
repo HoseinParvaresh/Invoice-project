@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ModeToggle } from "@/utility/ModeToggle";
+import { calculatePercent } from "@/utility/utilityFunction";
 
 export default function index() {
 
@@ -144,6 +145,7 @@ export default function index() {
             <Label htmlFor="colorPercent">درصد رنگ</Label>
             <Input name="colorPercent" onChange={(e) => setColoringPercent(Number(e.target.value))} value={coloringPercent} placeholder="" className="w-[50px]" />
           </div>
+          {/* dark mode button */}
           <ModeToggle/>
         </div>
       </div>
@@ -178,33 +180,36 @@ export default function index() {
           {/* Amount including tools */}
           <TableRow className={`${tools ? 'span' : 'hidden'}`}>
             <TableCell colSpan={3}>
-              مبلغ با احتساب ابزار
+              نرخ ابزار
               <span className="mr-2">(%{toolsPercent})</span>
             </TableCell>
             <TableCell className="text-right">
-              {addPercentage(totalPrice(rows), toolsPercent)}
+              {/* {addPercentage(totalPrice(rows), toolsPercent)} */}
+              {calculatePercent(totalPrice(rows),toolsPercent)}
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
           {/* Amount including coloring */}
           <TableRow className={`${coloring ? 'span' : 'hidden'}`}>
             <TableCell colSpan={3}>
-              مبلغ با احتساب  رنگ
+              نرخ رنگ
               <span className="mr-2">(%{coloringPercent})</span>
             </TableCell>
             <TableCell className="text-right">
-              {addPercentage(totalPrice(rows), coloringPercent)}
+              {/* {addPercentage(totalPrice(rows), coloringPercent)} */}
+              {calculatePercent(totalPrice(rows),coloringPercent)}
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
           {/* Amount including packing */}
           <TableRow className={`${packaging ? 'span' : 'hidden'}`}>
             <TableCell colSpan={3}>
-              مبلغ با احتساب بسته بندی
+              نرخ بسته بندی
               <span className="mr-2">(%{packagingPercent})</span>
             </TableCell>
             <TableCell className="text-right">
-              {addPercentage(totalPrice(rows), packagingPercent)}
+              {/* {addPercentage(totalPrice(rows), packagingPercent)} */}
+              {calculatePercent(totalPrice(rows),packagingPercent)}
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
