@@ -41,7 +41,6 @@ export default function index() {
   const { setTheme } = useTheme()
   setTheme(toggleMode)
 
-
   const [rows, setRows] = useState(
     Array.from({ length: rowCount }, () => ({
       height: '',
@@ -207,7 +206,7 @@ export default function index() {
               </DialogContent>
             </form>
           </Dialog>
-          <Button className="h-12 text-base">ثبت</Button>
+          {/* <Button className="h-12 text-base">ثبت</Button> */}
         </div>
       </div>
       {/* center and bottom */}
@@ -246,13 +245,19 @@ export default function index() {
             </TableCell>
             <TableCell className={`text-right flex gap-20 ${fontSize}`}>
               <div>
-                {calculatePercent(totalPrice(rows), toolsPercent)}
+                {
+                  tools &&
+                  formatNumber(calculatePercent(totalPrice(rows), toolsPercent))
+                }
                 <span className="mr-2">تومان</span>
               </div>
               <div className="flex">
                 <p className={`${fontSize === '!text-2xl' ? 'w-[300px]' : 'w-[230px]'}`}>مبلغ با احتساب ابزار</p>
                 <div>
-                  {addPercentage(totalPrice(rows), toolsPercent)}
+                  {
+                    tools &&
+                    formatNumber(addPercentage(totalPrice(rows), toolsPercent))
+                  }
                   <span className="mr-2">تومان</span>
                 </div>
               </div>
@@ -266,27 +271,27 @@ export default function index() {
             </TableCell>
             <TableCell className={`text-right flex gap-20 ${fontSize}`}>
               <div>
-                {calculatePercent(totalPrice(rows), coloringPercent)}
+                {
+                  tools ?
+                    formatNumber(calculatePercent(addPercentage(totalPrice(rows), toolsPercent), coloringPercent)) :
+                    coloring &&
+                    formatNumber(calculatePercent(totalPrice(rows), coloringPercent))
+
+                }
                 <span className="mr-2">تومان</span>
               </div>
               <div className="flex">
-                <p className={`${fontSize === '!text-2xl' ? 'w-[300px]' : 'w-[230px]'}`}>مبلغ با احتساب رنگ</p>
+                <p className={`${fontSize === '!text-2xl' ? 'w-[300px]' : 'w-[230px]'}`}>مبلغ با احتساب رنگ و ابزار</p>
                 <div>
-                  {addPercentage(totalPrice(rows), coloringPercent)}
+                  {
+                    tools ?
+                      formatNumber(Math.ceil(addPercentage(addPercentage(totalPrice(rows), toolsPercent), coloringPercent))) :
+                      coloring &&
+                      formatNumber(Math.ceil(addPercentage(totalPrice(rows), coloringPercent)))
+                  }
                   <span className="mr-2">تومان</span>
                 </div>
               </div>
-            </TableCell>
-          </TableRow>
-          {/* Amount including coloring */}
-          <TableRow className={`${coloring && tools ? 'span' : 'hidden'}`}>
-            <TableCell className={`${fontSize}`} colSpan={3}>
-              مبلغ با احتساب رنگ و ابزار
-              <span className="mr-2">(%{coloringPercent + toolsPercent})</span>
-            </TableCell>
-            <TableCell className={`text-right ${fontSize}`}>
-              {addPercentage(totalPrice(rows), coloringPercent + toolsPercent)}
-              <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
           {/* Amount including packing */}
@@ -297,13 +302,31 @@ export default function index() {
             </TableCell>
             <TableCell className={`text-right flex gap-20 ${fontSize}`}>
               <div>
-                {calculatePercent(calcPackingPercent(totalPrice(rows), coloringPercent + toolsPercent), packagingPercent)}
+                {
+                  tools && coloring ?
+                    formatNumber(Math.ceil(calculatePercent(addPercentage(addPercentage(totalPrice(rows), toolsPercent), coloringPercent), packagingPercent))) :
+                    tools ?
+                      formatNumber(Math.ceil(calculatePercent(addPercentage(totalPrice(rows), toolsPercent), packagingPercent))) :
+                      coloring ?
+                        formatNumber(Math.ceil(calculatePercent(addPercentage(totalPrice(rows), coloringPercent), packagingPercent))) :
+                        packaging &&
+                        formatNumber(Math.ceil(calculatePercent(totalPrice(rows), packagingPercent)))
+                }
                 <span className="mr-2">تومان</span>
               </div>
               <div className="flex">
-                <p className={`${fontSize === '!text-2xl' ? 'w-[300px]' : 'w-[230px]'}`}>مبلغ با احتساب بسته بندی</p>
+                <p className={`${fontSize === '!text-2xl' ? 'w-[390px]' : '!text-xl' ? 'w-[350px]' : 'w-[290px]'}`}>مبلغ با احتساب بسته بندی و رنگ و ابزار</p>
                 <div>
-                  {formatNumber(calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, rent, totalPrice(rows)) - rent)}
+                  {
+                    tools && coloring ?
+                      formatNumber(Math.ceil(calcPackingPercent(addPercentage(addPercentage(totalPrice(rows), toolsPercent), coloringPercent), packagingPercent))) :
+                      tools ?
+                        formatNumber(Math.ceil(calcPackingPercent(addPercentage(totalPrice(rows), toolsPercent), packagingPercent))) :
+                        coloring ?
+                          formatNumber(Math.ceil(calcPackingPercent(addPercentage(totalPrice(rows), coloringPercent), packagingPercent))) :
+                          packaging &&
+                          formatNumber(Math.ceil(calcPackingPercent(totalPrice(rows), packagingPercent)))
+                  }
                   <span className="mr-2">تومان</span>
                 </div>
               </div>
@@ -324,7 +347,23 @@ export default function index() {
               مبلغ کل
             </TableCell>
             <TableCell className={`text-right ${fontSize}`}>
-              {formatNumber(calcTotalAmount(packaging, coloring, tools, packagingPercent, coloringPercent, toolsPercent, rent, totalPrice(rows)))}
+              {
+                tools && coloring && packaging ?
+                  formatNumber(Math.ceil(calcTotalAmount(calcPackingPercent(addPercentage(addPercentage(totalPrice(rows), toolsPercent), coloringPercent), packagingPercent), rent))) :
+                  tools && coloring ?
+                    formatNumber(Math.ceil(calcTotalAmount(addPercentage(addPercentage(totalPrice(rows), toolsPercent), coloringPercent), rent))) :
+                    tools && packaging ?
+                      formatNumber(Math.ceil(calcTotalAmount(addPercentage(addPercentage(totalPrice(rows), toolsPercent), packagingPercent), rent))) :
+                      coloring && packaging ?
+                        formatNumber(Math.ceil(calcTotalAmount(addPercentage(addPercentage(totalPrice(rows), coloringPercent), packagingPercent), rent))) :
+                        tools ?
+                          formatNumber(Math.ceil(calcTotalAmount(addPercentage(totalPrice(rows), toolsPercent), rent))) :
+                          coloring ?
+                            formatNumber(Math.ceil(calcTotalAmount(addPercentage(totalPrice(rows), coloringPercent), rent))) :
+                            packaging ?
+                              formatNumber(Math.ceil(calcTotalAmount(addPercentage(totalPrice(rows), packagingPercent), rent))) :
+                              formatNumber(Math.ceil(calcTotalAmount(totalPrice(rows), rent)))
+              }
               <span className="mr-2">تومان</span>
             </TableCell>
           </TableRow>
