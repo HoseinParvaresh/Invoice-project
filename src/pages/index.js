@@ -32,7 +32,7 @@ export default function index() {
   const [coloring, setColoring] = useState(true)
   const [tools, setTools] = useState(true)
 
-  const [fontSize, setFontsize] = useState("!text-base")
+  const [fontSize, setFontsize] = useState("!text-lg")
 
   const [description, setDescription] = useState("")
 
@@ -86,6 +86,33 @@ export default function index() {
       }
     });
   };
+  const moveHandler = (e) => {
+    const index = Number(e.target.id.slice(2))
+    const word = e.target.id[0]
+
+    if (e.code === 'ArrowLeft') {
+      document.getElementById(`w-${index}`).focus();
+    }
+    if (e.code === 'ArrowRight') {
+      document.getElementById(`h-${index}`).focus();
+    }
+    if (e.code === 'ArrowDown' && index + 1 < rowCount) {
+      if (word === 'w') {
+        document.getElementById(`w-${index + 1}`).focus();
+      }
+      if (word === 'h') {
+        document.getElementById(`h-${index + 1}`).focus();
+      }
+    }
+    if (e.code === 'ArrowUp' && index > 0) {
+      if (word === 'w') {
+        document.getElementById(`w-${index - 1}`).focus();
+      }
+      if (word === 'h') {
+        document.getElementById(`h-${index - 1}`).focus();
+      }
+    }
+  }
 
   return (
     <div className="border border-black/50 dark:border-white/40 rounded-lg" dir="rtl">
@@ -217,10 +244,10 @@ export default function index() {
               <TableCell className={`w-[50px] border-l pr-5 ${fontSize}`}>{index + 1}</TableCell>
 
               <TableCell className="w-[100px] pr-3">
-                <Input className={`${fontSize} placeholder:text-sm`} placeholder="طول" onChange={(e) => handleInputChange(index, 'height', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'height', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'height', (e.target.value))} value={row.height} />
+                <Input id={`h-${index}`} onKeyDown={moveHandler} className={`${fontSize} placeholder:text-sm`} placeholder="طول" onChange={(e) => handleInputChange(index, 'height', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'height', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'height', (e.target.value))} value={row.height} />
               </TableCell>
               <TableCell className="w-[100px] border-l pl-3">
-                <Input className={`${fontSize} placeholder:text-sm`} placeholder="عرض" onChange={(e) => handleInputChange(index, 'width', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'width', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'width', (e.target.value))} value={row.width} />
+                <Input id={`w-${index}`} onKeyDown={moveHandler} className={`${fontSize} placeholder:text-sm`} placeholder="عرض" onChange={(e) => handleInputChange(index, 'width', e.target.value)} onBlur={(e) => roundUp ? handleInputChange(index, 'width', roundUpToNearestFive(e.target.value)) : handleInputChange(index, 'width', (e.target.value))} value={row.width} />
               </TableCell>
               <TableCell className="text-right">
                 <Input className={`${fontSize} placeholder:text-sm`} readOnly tabIndex={-1} placeholder="مبلغ" value={formatNumber(row.amount) + '  تومان'} />
