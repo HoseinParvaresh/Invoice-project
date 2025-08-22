@@ -77,10 +77,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --font-dana: "Dana";
-  --font-danaBold: "Dana Bold";
-  --font-Morabba: "Morabba";
-  --font-MorabbaBold: "Morabba Bold";
-  --font-MorabbaHeavy: "Morabba Heavy";
 }
 
 body {
@@ -100,26 +96,6 @@ body {
     font-family: "Dana";
     font-display: swap;
     src: url("/fonts/DanaFaNum-Regular.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Dana Bold";
-    font-display: swap;
-    src: url("/fonts/DanaFaNum-Bold.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Morabba";
-    font-display: swap;
-    src: url("/fonts/Morabba-Regular.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Morabba Bold";
-    font-display: swap;
-    src: url("/fonts/Morabba-Bold.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Morabba Heavy";
-    font-display: swap;
-    src: url("/fonts/Morabba-Heavy.woff2") format("woff2");
   }
 }
 

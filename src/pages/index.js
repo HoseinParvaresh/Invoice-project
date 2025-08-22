@@ -34,8 +34,6 @@ export default function index() {
 
   const [fontSize, setFontsize] = useState("!text-lg")
 
-  const [description, setDescription] = useState("")
-
   const [toggleMode, setToggleMode] = React.useState("light")
 
   const { setTheme } = useTheme()
